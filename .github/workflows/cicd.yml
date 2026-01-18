@@ -80,6 +80,4 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: true
-          tags:
-            - ${{ env.image_current }}
-            - ${{env.image_latest}}
+          tags: ${{env.image_latest}}
