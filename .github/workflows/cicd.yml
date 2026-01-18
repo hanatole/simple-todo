@@ -6,9 +6,34 @@ on:
 jobs:
   lint:
     runs-on: ubuntu-24.04
+    env:
+      DB_USER: todo
+      DB_NAME: todo
+      DB_PASSWORD: todo
+      DB_PORT: 5432
+      DB_HOST: localhost
+      SECRET_KEY: 0e5c4f6a22e45d48114af
+      DEBUG: True
+      ALLOWED_HOSTS: localhost
+      DJANGO_SETTINGS_MODULE: conf.settings
+    services:
+      todo:
+        image: postgres:18.1-alpine3.23
+        env:
+          POSTGRES_USER: ${{ env.DB_USER }}
+          POSTGRES_PASSWORD: ${{ env.DB_PASSWORD }}
+          POSTGRES_DB: ${{ env.DB_NAME }}
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6.0.2
+
       - name: Install dependencies
         uses: astral-sh/setup-uv@v7
         with:
@@ -17,3 +42,6 @@ jobs:
 
       - name: Run linters
         run: uv run ruff check .
+
+      - name: Run tests
+        run: uv run pytest
