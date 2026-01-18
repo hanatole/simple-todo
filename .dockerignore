@@ -1,0 +1,6 @@
+.github
+.venv
+local
+.env
+.env.example
+Dockerfile
