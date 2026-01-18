@@ -16,10 +16,13 @@ RUN python -m venv .venv \
 FROM builder
 WORKDIR /app
 RUN apt-get update && apt-get install --no-install-recommends -y libpq5 \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+
 ENV PATH="/app/.venv/bin:$PATH" \
     PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1
+    PYTHONUNBUFFERED=1 \
+    DJANGO_SETTINGS_MODULE=conf.settings
+
 COPY --from=builder /app/.venv /app/.venv
 COPY . .
 CMD ["python", "-m", "gunicorn", "conf.wsgi", "-b","0.0.0.0:8000"]
