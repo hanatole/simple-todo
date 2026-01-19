@@ -1,7 +1,6 @@
 name: Continuous Integration
-on:
-  - push
-  - pull_request
+on: push
+
 env:
   image: "${{ vars.REGISTRY_USER }}/${{ vars.PROJECT }}"
 jobs:
