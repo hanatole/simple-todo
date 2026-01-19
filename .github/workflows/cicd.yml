@@ -58,7 +58,7 @@ jobs:
     needs: check
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     outputs:
-      tags: ${{ steps.tags.outputs.tag }}
+      tag: ${{ steps.meta.outputs.tag }}
 
     steps:
       - name: Checkout repository
@@ -74,16 +74,15 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Compute tags
-        id: tags
-        run: |
-          echo "tag=${{ vars.REGISTRY_USER }}/${{ vars.PROJECT }}:$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+      - name: Compute image tag
+        id: meta
+        run: echo "tag=${{ vars.REGISTRY_USER }}/${{ vars.PROJECT }}:${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
           push: true
-          tags: "${{ vars.REGISTRY_USER }}/${{ vars.PROJECT }},${{steps.tags.outputs.tag}}"
+          tags: "${{ vars.REGISTRY_USER }}/${{ vars.PROJECT }},${{steps.meta.outputs.tag}}"
 
   deploy-database:
     name: Deploy database
