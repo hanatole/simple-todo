@@ -57,6 +57,8 @@ jobs:
     runs-on: ubuntu-24.04
     needs: check
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    outputs:
+      tags: ${{ steps.tags.outputs.tag }}
 
     steps:
       - name: Checkout repository
@@ -72,11 +74,16 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
+      - name: Compute tags
+        id: tags
+        run: |
+          echo "tag=${{ vars.REGISTRY_USER }}/${{ vars.PROJECT }}:$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
           push: true
-          tags: "${{env.image}},${{env.image}}:$(git rev-parse --short HEAD)"
+          tags: "${{ vars.REGISTRY_USER }}/${{ vars.PROJECT }},${{steps.tags.outputs.tag}}"
 
   deploy-database:
     name: Deploy database
@@ -106,6 +113,6 @@ jobs:
       network_name: traefiknetwork
       service_name: todo-backend
       service_port: 8000
-      docker_image: "${{env.image}}"
+      docker_image: "${{needs.package.outputs.tag}}"
       tier: "backend"
     secrets: inherit
