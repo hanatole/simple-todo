@@ -15,7 +15,6 @@ jobs:
       tier: "database"
       volume_path: "/var/lib/postgresql/data"
       db_type: "postgresql"
-      add_labels: False
     secrets: inherit
 
   deploy:
@@ -30,5 +29,4 @@ jobs:
       service_port: 8000
       docker_image: "image"
       tier: "backend"
-      add_labels: True
     secrets: inherit
