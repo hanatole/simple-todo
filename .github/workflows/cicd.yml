@@ -4,9 +4,6 @@ on:
   pull_request:
     branches:
       - main
-env:
-  image_current: "${{vars.REGISTRY_USER}}/${{vars.PROJECT}}:$(git rev-parse --short HEAD)"
-  image_latest: "${{vars.REGISTRY_USER}}/${{vars.PROJECT}}:latest"
 
 jobs:
   check:
@@ -78,7 +75,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: true
-          tags: ${{env.image_latest}}
+          tags: ${{vars.REGISTRY_USER}}/${{vars.PROJECT}}
 
   deploy-database:
     name: Deploy database
