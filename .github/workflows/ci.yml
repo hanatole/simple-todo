@@ -1,8 +1,6 @@
 name: Continuous Integration
 on: push
 
-env:
-  image: "${{ vars.REGISTRY_USER }}/${{ vars.PROJECT }}"
 jobs:
   check:
     name: Run linters and tests
@@ -45,6 +43,9 @@ jobs:
 
       - name: Run linters
         run: uv run ruff check .
+
+      - name: Check migrations
+        run: uv run python manage.py makemigrations --dry-run --check
 
       - name: Run tests
         run: uv run pytest
