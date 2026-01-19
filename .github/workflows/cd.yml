@@ -15,6 +15,7 @@ jobs:
       tier: "database"
       volume_path: "/var/lib/postgresql/data"
       db_type: "postgresql"
+      add_labels: False
     secrets: inherit
 
   deploy:
