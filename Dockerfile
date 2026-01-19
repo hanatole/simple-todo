@@ -4,7 +4,8 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
     gcc \
     libpq-dev \
     python3-dev \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
 
 COPY --from=ghcr.io/astral-sh/uv:0.9.22 /uv /bin/
 
@@ -15,8 +16,9 @@ RUN python -m venv .venv \
 
 FROM builder
 WORKDIR /app
-RUN apt-get update && apt-get install --no-install-recommends -y libpq5 \
-    && rm -rf /var/lib/apt/lists/* \
+RUN apt-get update && apt-get install --no-install-recommends -y libpq5 && \
+    rm -rf /var/lib/apt/lists/*  && \
+    apt-get clean
 
 ENV PATH="/app/.venv/bin:$PATH" \
     PYTHONDONTWRITEBYTECODE=1 \
@@ -25,4 +27,5 @@ ENV PATH="/app/.venv/bin:$PATH" \
 
 COPY --from=builder /app/.venv /app/.venv
 COPY . .
-CMD ["python", "-m", "gunicorn", "conf.wsgi", "-b","0.0.0.0:8000"]
+
+CMD ["/app/.venv/bin/python", "-m", "gunicorn", "conf.wsgi", "-b", "0.0.0.0:8000"]
