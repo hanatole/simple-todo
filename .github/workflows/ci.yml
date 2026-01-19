@@ -1,8 +1,6 @@
 name: Continuous Integration
 on: push
 
-env:
-  image: "${{ vars.REGISTRY_USER }}/${{ vars.PROJECT }}"
 jobs:
   check:
     name: Run linters and tests
