@@ -20,6 +20,7 @@ jobs:
 
   deploy:
     name: Deploy backend
+    needs: database
     uses: hanatole/deployer/.github/workflows/cd.yml@main
     with:
       project_directory: "/srv/todo"
