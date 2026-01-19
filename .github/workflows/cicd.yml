@@ -4,7 +4,8 @@ on:
   pull_request:
     branches:
       - main
-
+env:
+  image: "${{ vars.REGISTRY_USER }}/${{ vars.PROJECT }}"
 jobs:
   check:
     name: Run linters and tests
@@ -55,7 +56,7 @@ jobs:
     name: Package and deploy application
     runs-on: ubuntu-24.04
     needs: check
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
 
     steps:
       - name: Checkout repository
@@ -75,12 +76,12 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: true
-          tags: "${{vars.REGISTRY_USER}}/${{vars.PROJECT}}:$(git rev-parse --short HEAD)"
+          tags: "${{env.image}},${{env.image}}:$(git rev-parse --short HEAD)"
 
   deploy-database:
     name: Deploy database
     needs: package
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     uses: hanatole/deployer/.github/workflows/cd.yml@main
     with:
       project_directory: "/srv/todo"
@@ -97,7 +98,7 @@ jobs:
   deploy-backend:
     name: Deploy backend
     needs: deploy-database
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     uses: hanatole/deployer/.github/workflows/cd.yml@main
     with:
       project_directory: "/srv/todo"
@@ -105,6 +106,6 @@ jobs:
       network_name: traefiknetwork
       service_name: todo-backend
       service_port: 8000
-      docker_image: "${{vars.REGISTRY_USER}}/${{vars.PROJECT}}:$(git rev-parse --short HEAD)"
+      docker_image: "${{env.image}}"
       tier: "backend"
     secrets: inherit
