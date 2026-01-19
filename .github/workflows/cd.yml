@@ -27,6 +27,6 @@ jobs:
       network_name: traefiknetwork
       service_name: todo-backend
       service_port: 8000
-      docker_image: "image"
+      docker_image: "ahagbes/todo-backend"
       tier: "backend"
     secrets: inherit
